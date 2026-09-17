@@ -1,23 +1,3 @@
-"""
-Reelfetch - Instagram & YouTube video downloader / MP3 converter
-------------------------------------------------------------------
-A small Flask app:
-  - GET  /            the page
-  - POST /preview      {url} -> {title, thumbnail, duration, uploader, platform}
-  - POST /download     {url} -> streams the video file back
-  - POST /convert      {url} -> streams an MP3 (audio-only) file back
-
-Nothing is stored permanently on the server; each request downloads into a
-throwaway temp folder that's deleted once the response has been sent.
-
-Run locally:
-    pip install -r requirements.txt --break-system-packages
-    python app.py
-    -> open http://localhost:5000
-
-Deploy: see README.md in this folder.
-"""
-
 import os
 import glob
 import shutil
