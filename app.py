@@ -1,8 +1,29 @@
+"""
+Reelfetch - Instagram & YouTube video downloader / MP3 converter
+------------------------------------------------------------------
+A small Flask app:
+  - GET  /            the page
+  - POST /preview      {url} -> {title, thumbnail, duration, uploader, platform}
+  - POST /download     {url} -> streams the video file back
+  - POST /convert      {url} -> streams an MP3 (audio-only) file back
+
+Nothing is stored permanently on the server; each request downloads into a
+throwaway temp folder that's deleted once the response has been sent.
+
+Run locally:
+    pip install -r requirements.txt --break-system-packages
+    python app.py
+    -> open http://localhost:5000
+
+Deploy: see README.md in this folder.
+"""
+
 import os
 import glob
 import shutil
 import tempfile
 import uuid
+from datetime import datetime
 
 from flask import Flask, request, render_template_string, send_file, jsonify
 import yt_dlp
@@ -287,6 +308,11 @@ PAGE = """
     margin-top: 28px; border-top: 1px solid var(--border); padding-top: 18px;
   }
 
+  .copyright {
+    color: var(--text-faint); font-size: 0.72rem; letter-spacing: 0.01em;
+    margin: 14px 0 0; text-align: center;
+  }
+
   /* ---- MP3 dialog ---- */
   dialog#mp3-dialog {
     border: 1px solid var(--border); border-radius: 18px; padding: 0;
@@ -369,6 +395,8 @@ PAGE = """
       <p class="note">Only download content you have the right to. Private posts and age-restricted
       videos need a signed-in session, which this version doesn't support. Respect copyright when
       converting music or video to MP3.</p>
+
+      <p class="copyright">&copy; {{ current_year }} loki_varient_01</p>
     </div>
   </main>
 
@@ -553,7 +581,7 @@ PAGE = """
 
 @app.route("/")
 def index():
-    return render_template_string(PAGE)
+    return render_template_string(PAGE, current_year=datetime.now().year)
 
 
 @app.route("/preview", methods=["POST"])
