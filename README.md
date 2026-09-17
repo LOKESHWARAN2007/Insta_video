@@ -37,15 +37,30 @@ git push -u origin main
 - **Fly.io**: `fly launch` in the project folder, follow prompts (needs `fly.toml`, which `fly launch` generates for you).
 - **PythonAnywhere**: good for simple always-on hosting without Docker/buildpacks.
 
+## What's included
+- A live thumbnail/title preview once you paste a link (debounced, so it fetches
+  shortly after you stop typing).
+- Works with both **Instagram** (public reels/posts) and **YouTube** (public videos) —
+  same `/download` endpoint handles both, since yt-dlp detects the site automatically.
+- A **Convert to MP3** dialog that pulls audio-only and transcodes it with ffmpeg.
+
+## About the MP3 conversion
+Audio extraction needs ffmpeg. Rather than relying on the host having it installed at
+the system level (Render's native Python runtime doesn't, by default), this app uses
+the `imageio-ffmpeg` package, which bundles a static ffmpeg binary and points yt-dlp at
+it directly — no extra buildpacks or Dockerfile needed. It does make the build a bit
+larger and the first install slightly slower.
+
 ## Notes & limits
-- This app only handles **public** posts/reels. Private content needs cookie-based
-  authentication, which isn't included here (added complexity + higher risk of violating
-  Instagram's Terms of Service).
+- This app only handles **public** content. Private posts and age-restricted videos need
+  cookie-based authentication, which isn't included here.
 - Downloaded files are streamed to the browser and then deleted from the server —
   nothing is stored persistently.
 - Free tiers on Render/Railway "sleep" after inactivity, so the first request after
-  idling can take ~30 seconds to wake up.
-- yt-dlp needs occasional updates as Instagram changes its site. Bump the version in
-  `requirements.txt` (or run `pip install -U yt-dlp`) if downloads start failing.
-- Respect copyright and Instagram's Terms of Service — only download content you have
-  the right to download.
+  idling can take ~30 seconds to wake up — and MP3 conversion is slower than a plain
+  video download since it has to transcode.
+- yt-dlp needs occasional updates as Instagram/YouTube change their sites. Bump the
+  version in `requirements.txt` (or run `pip install -U yt-dlp`) if downloads start
+  failing.
+- Respect copyright and each platform's Terms of Service — only download or convert
+  content you have the right to.
